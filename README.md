@@ -1,3 +1,1 @@
-YNEA Control de Almacén TEST v7.2
-
-Corrige lectura de SUPABASE_PUBLISHABLE_KEY y logo embebido.
+YNEA Control de Almacén TEST v7.3 - Conexión pacientes corregida.
