@@ -1,22 +1,14 @@
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Access-Control-Allow-Origin', '*');
   const url = process.env.SUPABASE_URL || 'https://vadohvwjoxghubceffpn.supabase.co';
   const key = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY || 'sb_publishable_PM7HIrRvX8ShKW8yUFvh-w_ucW8ewwY';
   const table = process.env.SUPABASE_PACIENTES_TABLE || 'pacientes';
-  if (!key) {
-    return res.status(500).json({ error: 'Conexión interna pendiente: no se pudo leer la clave pública de conexión.' });
-  }
   try {
     const endpoint = `${url}/rest/v1/${table}?select=id,nombre,telefono,email,observaciones&order=nombre.asc&limit=1000`;
-    const r = await fetch(endpoint, {
-      headers: {
-        apikey: key,
-        Authorization: `Bearer ${key}`,
-        Accept: 'application/json'
-      }
-    });
+    const r = await fetch(endpoint, { headers: { apikey: key, Authorization: `Bearer ${key}`, Accept: 'application/json' } });
     const text = await r.text();
-    if (!r.ok) return res.status(r.status).json({ error: text || 'Error consultando pacientes' });
+    if (!r.ok) return res.status(r.status).json({ error: `Supabase HTTP ${r.status}: ${text}` });
     return res.status(200).json({ pacientes: JSON.parse(text) });
   } catch (e) {
     return res.status(500).json({ error: e.message || 'Error interno' });
