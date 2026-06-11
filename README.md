@@ -1,5 +1,1 @@
-# YNEA Control de Almacén - TEST
-
-Primera versión base navegable. Incluye identidad azul celeste, PWA, pantallas principales, formularios iniciales y lógica TEST en navegador.
-
-Siguiente fase: conectar Supabase TEST y crear tablas reales.
+{"name":"YNEA Control de Almacén","short_name":"YNEA Almacén","start_url":"./index.html","display":"standalone","background_color":"#ffffff","theme_color":"#58C7E8","icons":[{"src":"icons/icon-192.png","sizes":"192x192","type":"image/png"},{"src":"icons/icon-512.png","sizes":"512x512","type":"image/png"}]}
