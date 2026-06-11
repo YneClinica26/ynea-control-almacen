@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#58C7E8" />
+  <title>YNEA Control de Almacén</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="splash" class="splash">
+    <div class="brand-mark">Y</div>
+    <h1>YNEA</h1>
+    <p>Control de Almacén</p>
+    <span>Modo TEST</span>
+  </div>
+
+  <header class="app-header">
+    <div class="logo-wrap">
+      <div class="brand-mark small">Y</div>
+      <div>
+        <strong>YNEA</strong>
+        <small>Control de Almacén · TEST</small>
+      </div>
+    </div>
+    <button class="user-chip" id="roleChip">Administrador</button>
+  </header>
+
+  <main class="layout">
+    <nav class="sidebar" aria-label="Menú principal">
+      <button class="nav-btn active" data-view="inicio">Inicio</button>
+      <button class="nav-btn" data-view="stock">Stock</button>
+      <button class="nav-btn" data-view="entradas">Entradas</button>
+      <button class="nav-btn" data-view="salidas">Salidas</button>
+      <button class="nav-btn" data-view="inventario">Inventario</button>
+      <button class="nav-btn" data-view="alertas">Alertas</button>
+      <button class="nav-btn" data-view="productos">Productos</button>
+      <button class="nav-btn" data-view="proveedores">Proveedores</button>
+      <button class="nav-btn" data-view="informes">Informes</button>
+      <button class="nav-btn" data-view="configuracion">Configuración</button>
+    </nav>
+
+    <section class="content">
+      <section id="inicio" class="view active">
+        <div class="page-title">
+          <h2>Inicio</h2>
+          <p>Resumen operativo del almacén.</p>
+        </div>
+        <div class="cards">
+          <article class="card warning"><strong>Stock bajo</strong><span id="lowStockCount">0</span></article>
+          <article class="card danger"><strong>Caducados</strong><span id="expiredCount">0</span></article>
+          <article class="card info"><strong>Próximas caducidades</strong><span id="nearExpiryCount">0</span></article>
+          <article class="card"><strong>Inventarios abiertos</strong><span>0</span></article>
+        </div>
+        <div class="quick-actions">
+          <button class="primary" data-open="entradaForm">+ Nueva entrada</button>
+          <button class="primary" data-open="salidaForm">+ Nueva salida</button>
+          <button class="secondary" data-view-go="inventario">+ Inventario</button>
+        </div>
+      </section>
+
+      <section id="stock" class="view">
+        <div class="page-title"><h2>Stock actual</h2><p>Stock calculado por producto, lote y caducidad.</p></div>
+        <input class="search" placeholder="Buscar producto, lote o proveedor" data-search="stockTable" />
+        <div class="table-wrap"><table id="stockTable"><thead><tr><th>Producto</th><th>Categoría</th><th>Lote</th><th>Caducidad</th><th>Stock</th><th>Estado</th></tr></thead><tbody></tbody></table></div>
+      </section>
+
+      <section id="entradas" class="view">
+        <div class="page-title"><h2>Entradas</h2><p>Una entrada puede contener varios productos. Factura obligatoria.</p></div>
+        <button class="primary" data-open="entradaForm">+ Nueva entrada</button>
+        <div class="table-wrap"><table id="entradasTable"><thead><tr><th>Nº</th><th>Fecha</th><th>Proveedor</th><th>Factura</th><th>Usuario</th><th>Total</th></tr></thead><tbody></tbody></table></div>
+      </section>
+
+      <section id="salidas" class="view">
+        <div class="page-title"><h2>Salidas</h2><p>Una salida por paciente. Productos trazables y no trazables en la misma salida.</p></div>
+        <button class="primary" data-open="salidaForm">+ Nueva salida</button>
+        <div class="table-wrap"><table id="salidasTable"><thead><tr><th>Nº</th><th>Fecha</th><th>Paciente</th><th>Profesional</th><th>Usuario</th><th>Estado</th></tr></thead><tbody></tbody></table></div>
+      </section>
+
+      <section id="inventario" class="view">
+        <div class="page-title"><h2>Inventario</h2><p>Conteo por producto + lote. Incluye modo móvil.</p></div>
+        <button class="primary">+ Nuevo inventario</button><button class="secondary">Modo conteo móvil</button>
+        <div class="empty">Inventarios pendientes de configurar en Supabase.</div>
+      </section>
+
+      <section id="alertas" class="view">
+        <div class="page-title"><h2>Alertas</h2><p>Stock bajo, caducidades, bloqueos y diferencias.</p></div>
+        <div id="alertsList" class="alerts-list"></div>
+      </section>
+
+      <section id="productos" class="view">
+        <div class="page-title"><h2>Productos</h2><p>Administrador puede crear productos y categorías.</p></div>
+        <button class="primary" data-open="productoForm">+ Producto</button><button class="secondary" data-open="categoriaForm">+ Categoría</button>
+        <div class="table-wrap"><table id="productosTable"><thead><tr><th>Código</th><th>Producto</th><th>Categoría</th><th>Unidad</th><th>Stock mín.</th><th>Trazabilidad</th><th>Estado</th></tr></thead><tbody></tbody></table></div>
+      </section>
+
+      <section id="proveedores" class="view">
+        <div class="page-title"><h2>Proveedores</h2><p>Varios proveedores por producto e histórico de precios.</p></div>
+        <button class="primary" data-open="proveedorForm">+ Proveedor</button>
+        <div class="table-wrap"><table id="proveedoresTable"><thead><tr><th>Proveedor</th><th>CIF/NIF</th><th>Teléfono</th><th>Estado</th></tr></thead><tbody></tbody></table></div>
+      </section>
+
+      <section id="informes" class="view">
+        <div class="page-title"><h2>Informes</h2><p>Stock, compras, consumo, trazabilidad, inventario y precios históricos.</p></div>
+        <div class="cards"><article class="card">Stock actual</article><article class="card">Entradas/compras</article><article class="card">Salidas/consumo</article><article class="card">Trazabilidad clínica</article></div>
+      </section>
+
+      <section id="configuracion" class="view">
+        <div class="page-title"><h2>Configuración</h2><p>Usuarios, categorías, unidades, alertas, copias y entorno TEST/REAL.</p></div>
+        <div class="config-grid">
+          <button class="secondary" data-open="categoriaForm">Categorías</button>
+          <button class="secondary" data-open="unidadForm">Unidades</button>
+          <button class="secondary">Usuarios</button>
+          <button class="secondary">Copias</button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="active" data-view="inicio">Inicio</button><button data-view="stock">Stock</button><button data-view="entradas">Entrada</button><button data-view="salidas">Salida</button><button data-view="configuracion">Más</button>
+  </nav>
+
+  <dialog id="modal">
+    <form method="dialog" class="modal-card">
+      <button class="close" value="cancel">×</button>
+      <div id="modalContent"></div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
