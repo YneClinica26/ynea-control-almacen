@@ -1,12 +1,10 @@
-YNEA Control de Almacén TEST v6 PACIENTES
+YNEA Control de Almacén TEST v6.1
 
-Versión correcta v6.
-Incluye:
-- Usuarios editables.
-- Conexión a pacientes YNEA desde Supabase.
-- Tabla pacientes: id, nombre, telefono, email, observaciones.
-- Botón Abrir ficha paciente operativo dentro de Salidas.
-- Botón Abrir en Agenda YNEA.
+Cambios:
+- Botón simple: Conectar con Agenda YNEA.
+- Oculta la ventana técnica por defecto.
+- Tabla pacientes fijada como pacientes.
+- Buscador de pacientes en salidas.
+- Botón abrir ficha paciente operativo.
 
-Subir todos los archivos sueltos a GitHub, no la carpeta completa.
-Después redeploy en Vercel con Use existing Build Cache = OFF.
+Subir el contenido de este ZIP a GitHub y redeploy en Vercel con caché OFF.
