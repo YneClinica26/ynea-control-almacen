@@ -1,2 +1,2 @@
-YNEA Control de Almacén TEST v4 LIMPIO
-Subir estos archivos en la raíz del repositorio. No subir una carpeta contenedora.
+YNEA Control de Almacén TEST v5 Supabase
+Subir todos los archivos sueltos a GitHub. Configurar Supabase desde Configuración > Conexión pacientes.
