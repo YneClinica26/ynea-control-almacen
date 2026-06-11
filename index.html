@@ -1,0 +1,53 @@
+const state = {
+  categorias:['Medicación','Dispositivo médico','Fungibles','Instrumental','Material sanitario'],
+  unidades:['Unidad','Caja','Blíster','Bolsa','Frasco','Kit'],
+  productos:[
+    {codigo:'ALM-000001',nombre:'DIU Mirena',categoria:'Dispositivo médico',unidad:'Unidad',min:5,trazabilidad:true,estado:'Activo'},
+    {codigo:'ALM-000002',nombre:'Guantes nitrilo',categoria:'Fungibles',unidad:'Caja',min:10,trazabilidad:false,estado:'Activo'},
+    {codigo:'ALM-000003',nombre:'Ácido hialurónico 1 ml',categoria:'Medicación',unidad:'Unidad',min:3,trazabilidad:true,estado:'Activo'}
+  ],
+  proveedores:[{nombre:'Proveedor ejemplo',cif:'B00000000',telefono:'',estado:'Activo'}],
+  usuarios:[{nombre:'Admin',apellidos:'YNEA',telefono:'',rol:'Administrador',estado:'Activo'}],
+  lotes:[
+    {producto:'DIU Mirena',categoria:'Dispositivo médico',lote:'MIR2601',caducidad:'2028-12-31',stock:5,estado:'Activo'},
+    {producto:'Guantes nitrilo',categoria:'Fungibles',lote:'',caducidad:'',stock:20,estado:'Activo'},
+    {producto:'Ácido hialurónico 1 ml',categoria:'Medicación',lote:'AH2602',caducidad:'2027-06-30',stock:2,estado:'Stock bajo'}
+  ],
+  entradas:[], salidas:[]
+};
+const $=s=>document.querySelector(s); const $$=s=>document.querySelectorAll(s);
+setTimeout(()=>$('#splash').classList.add('hide'),650);
+function go(view){ $$('.view,.nav-btn,.bottom-nav button').forEach(x=>x.classList.remove('active')); $('#'+view).classList.add('active'); $$(`[data-view="${view}"]`).forEach(x=>x.classList.add('active')); }
+$$('[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view))); $$('[data-view-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.viewGo)));
+function badge(text){let c=text==='Activo'?'ok':text==='Stock bajo'?'warn':text==='Bloqueado'||text==='Caducado'?'danger':'info';return `<span class="badge ${c}">${text}</span>`}
+function render(){
+ $('#productosTable tbody').innerHTML=state.productos.map(p=>`<tr><td>${p.codigo}</td><td>${p.nombre}</td><td>${p.categoria}</td><td>${p.unidad}</td><td>${p.min}</td><td>${p.trazabilidad?'Sí':'No'}</td><td>${badge(p.estado)}</td></tr>`).join('');
+ $('#stockTable tbody').innerHTML=state.lotes.map(l=>`<tr><td>${l.producto}</td><td>${l.categoria}</td><td>${l.lote||'—'}</td><td>${l.caducidad||'—'}</td><td>${l.stock}</td><td>${badge(l.estado)}</td></tr>`).join('');
+ $('#proveedoresTable tbody').innerHTML=state.proveedores.map(p=>`<tr><td>${p.nombre}</td><td>${p.cif}</td><td>${p.telefono||'—'}</td><td>${badge(p.estado)}</td></tr>`).join('');
+ $('#entradasTable tbody').innerHTML=state.entradas.map(e=>`<tr><td>${e.num}</td><td>${e.fecha}</td><td>${e.proveedor}</td><td>${e.factura}</td><td>${e.usuario}</td><td>${e.total} €</td></tr>`).join('')||'<tr><td colspan="6">Sin entradas todavía</td></tr>';
+ $('#salidasTable tbody').innerHTML=state.salidas.map(s=>`<tr><td>${s.num}</td><td>${s.fecha}</td><td>${s.paciente}</td><td>${s.profesional}</td><td>${s.usuario}</td><td>${badge(s.estado)}</td></tr>`).join('')||'<tr><td colspan="6">Sin salidas todavía</td></tr>';
+ const low=state.lotes.filter(l=>l.estado==='Stock bajo').length; $('#lowStockCount').textContent=low; $('#expiredCount').textContent='0'; $('#nearExpiryCount').textContent='0';
+ $('#alertsList').innerHTML = low ? '<div class="alert">Hay productos por debajo del stock mínimo.</div>' : '<div class="alert">No hay alertas críticas en esta versión inicial.</div>';
+}
+const modal=$('#modal'), modalContent=$('#modalContent');
+const forms={
+ productoForm:`<h3>Nuevo producto</h3><div class="form-grid"><label>Nombre<input id="pNombre" required></label><label>Categoría<select id="pCategoria">${state.categorias.map(c=>`<option>${c}</option>`).join('')}</select></label><label>Unidad<select id="pUnidad">${state.unidades.map(u=>`<option>${u}</option>`).join('')}</select></label><label>Stock mínimo<input id="pMin" type="number" value="1"></label><label>Requiere trazabilidad clínica<select id="pTraz"><option>No</option><option>Sí</option></select></label><label>Estado<select id="pEstado"><option>Activo</option><option>Bloqueado</option><option>Inactivo</option></select></label><button class="primary full" type="button" onclick="saveProducto()">Guardar producto TEST</button></div>`,
+ categoriaForm:`<h3>Nueva categoría</h3><div class="form-grid"><label>Nombre categoría<input id="catNombre"></label><button class="primary full" type="button" onclick="saveCategoria()">Guardar categoría TEST</button></div>`,
+ unidadForm:`<h3>Nueva unidad</h3><div class="form-grid"><label>Nombre unidad<input id="uniNombre" placeholder="Ej. Frasco 200 ml"></label><button class="primary full" type="button" onclick="saveUnidad()">Guardar unidad TEST</button></div>`,
+ proveedorForm:`<h3>Nuevo proveedor</h3><div class="form-grid"><label>Nombre<input id="provNombre"></label><label>CIF/NIF<input id="provCif"></label><label>Teléfono<input id="provTel"></label><button class="primary full" type="button" onclick="saveProveedor()">Guardar proveedor TEST</button></div>`,
+ usuariosForm:`<h3>Usuarios</h3><p>Gestión inicial de usuarios. Datos funcionales: nombre, apellidos, teléfono y estado.</p><div class="table-wrap"><table><thead><tr><th>Nombre</th><th>Apellidos</th><th>Teléfono</th><th>Rol</th><th>Estado</th></tr></thead><tbody>${state.usuarios.map(u=>`<tr><td>${u.nombre}</td><td>${u.apellidos}</td><td>${u.telefono||'—'}</td><td>${u.rol}</td><td>${u.estado}</td></tr>`).join('')}</tbody></table></div><hr><div class="form-grid"><label>Nombre<input id="usrNombre"></label><label>Apellidos<input id="usrApellidos"></label><label>Teléfono<input id="usrTel"></label><label>Rol<select id="usrRol"><option>Administrador</option><option>Almacén / Recepción</option><option>Profesional</option><option>Solo lectura</option></select></label><label>Estado<select id="usrEstado"><option>Activo</option><option>Bloqueado</option><option>Inactivo</option></select></label><button class="primary full" type="button" onclick="saveUsuario()">Guardar usuario TEST</button></div>`,
+ entradaForm:`<h3>Nueva entrada</h3><p>Versión inicial: cabecera con factura obligatoria. Las líneas múltiples se activarán con Supabase.</p><div class="form-grid"><label>Fecha recepción<input id="entFecha" type="date"></label><label>Proveedor<input id="entProveedor"></label><label>Nº factura proveedor<input id="entFactura"></label><label>Factura proveedor<input id="entArchivo" type="file" accept=".pdf,image/*"></label><button class="primary full" type="button" onclick="saveEntrada()">Guardar entrada TEST</button></div>`,
+ salidaForm:`<h3>Nueva salida</h3><p>Regla: una salida por paciente.</p><div class="form-grid"><label>Paciente<input id="salPaciente"></label><label>Profesional responsable<input id="salProfesional"></label><label>Fecha<input id="salFecha" type="date"></label><label>Estado<select id="salEstado"><option>Administrado</option><option>Registrado</option><option>Anulado</option></select></label><button class="primary full" type="button" onclick="saveSalida()">Guardar salida TEST</button></div>`
+};
+$$('[data-open]').forEach(b=>b.addEventListener('click',()=>{modalContent.innerHTML=forms[b.dataset.open]; modal.showModal();}));
+function saveProducto(){state.productos.push({codigo:'ALM-'+String(state.productos.length+1).padStart(6,'0'),nombre:$('#pNombre').value||'Producto sin nombre',categoria:$('#pCategoria').value,unidad:$('#pUnidad').value,min:$('#pMin').value||0,trazabilidad:$('#pTraz').value==='Sí',estado:$('#pEstado').value}); modal.close(); render(); go('productos');}
+function saveCategoria(){const v=$('#catNombre').value.trim(); if(v) state.categorias.push(v); modal.close();}
+function saveUnidad(){const v=$('#uniNombre').value.trim(); if(v) state.unidades.push(v); modal.close();}
+function saveProveedor(){state.proveedores.push({nombre:$('#provNombre').value||'Proveedor',cif:$('#provCif').value||'—',telefono:$('#provTel').value,estado:'Activo'}); modal.close(); render(); go('proveedores');}
+function saveUsuario(){state.usuarios.push({nombre:$('#usrNombre').value||'Usuario',apellidos:$('#usrApellidos').value||'',telefono:$('#usrTel').value||'',rol:$('#usrRol').value,estado:$('#usrEstado').value}); modal.close(); setTimeout(()=>{modalContent.innerHTML=forms.usuariosForm; modal.showModal();},50);}
+function saveEntrada(){const file=$('#entArchivo').files[0]; if(!$('#entProveedor').value||!$('#entFactura').value||!file){alert('Proveedor, número de factura y archivo de factura son obligatorios.');return;} state.entradas.push({num:'E-'+String(state.entradas.length+1).padStart(6,'0'),fecha:$('#entFecha').value||new Date().toISOString().slice(0,10),proveedor:$('#entProveedor').value,factura:$('#entFactura').value,usuario:'Administrador',total:'0,00'}); modal.close(); render(); go('entradas');}
+function saveSalida(){if(!$('#salPaciente').value||!$('#salProfesional').value){alert('Paciente y profesional responsable son obligatorios.');return;} state.salidas.push({num:'S-'+String(state.salidas.length+1).padStart(6,'0'),fecha:$('#salFecha').value||new Date().toISOString().slice(0,10),paciente:$('#salPaciente').value,profesional:$('#salProfesional').value,usuario:'Administrador',estado:$('#salEstado').value}); modal.close(); render(); go('salidas');}
+$$('[data-search]').forEach(inp=>inp.addEventListener('input',()=>{const q=inp.value.toLowerCase(), rows=$$('#'+inp.dataset.search+' tbody tr'); rows.forEach(r=>r.style.display=r.textContent.toLowerCase().includes(q)?'':'none')}));
+render();
+
+const logoutBtn=document.querySelector('#logoutBtn'); if(logoutBtn){logoutBtn.addEventListener('click',()=>alert('Cierre de sesión TEST. La autenticación real se conectará con Supabase.'));}
