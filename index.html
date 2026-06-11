@@ -49,3 +49,5 @@ function saveEntrada(){const file=$('#entArchivo').files[0]; if(!$('#entProveedo
 function saveSalida(){if(!$('#salPaciente').value||!$('#salProfesional').value){alert('Paciente y profesional responsable son obligatorios.');return;} state.salidas.push({num:'S-'+String(state.salidas.length+1).padStart(6,'0'),fecha:$('#salFecha').value||new Date().toISOString().slice(0,10),paciente:$('#salPaciente').value,profesional:$('#salProfesional').value,usuario:'Administrador',estado:$('#salEstado').value}); modal.close(); render(); go('salidas');}
 $$('[data-search]').forEach(inp=>inp.addEventListener('input',()=>{const q=inp.value.toLowerCase(), rows=$$('#'+inp.dataset.search+' tbody tr'); rows.forEach(r=>r.style.display=r.textContent.toLowerCase().includes(q)?'':'none')}));
 render();
+
+const logoutBtn=document.querySelector('#logoutBtn'); if(logoutBtn){logoutBtn.addEventListener('click',()=>alert('Cierre de sesión TEST. La autenticación real se conectará con Supabase.'));}
